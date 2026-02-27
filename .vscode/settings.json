@@ -1,3 +1,6 @@
 {
-    "kiroAgent.configureMCP": "Disabled"
+    "kiroAgent.configureMCP": "Disabled",
+    "rubyLsp.enabledFeatures": {
+        "diagnostics": false
+    }
 }
