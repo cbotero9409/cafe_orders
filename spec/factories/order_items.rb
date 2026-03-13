@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :order_item do
     order
     product
-    quantity { 1 }
-    unit_price { 20 }
+    quantity { 2 }
+    unit_price { 2000 }
   end
 end
