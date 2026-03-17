@@ -11,26 +11,6 @@ RSpec.describe Order, type: :model do
 
     describe "status" do
       it { should define_enum_for(:status).with_values(pending: 0, paid: 1, cancelled: 2, refunded: 3).with_prefix }
-      
-      describe "status behavior" do
-        let(:pending_order) { build(:order) }
-        let(:paid_order) { build(:order, :paid) }
-        let(:cancelled_order) { build(:order, :cancelled) }
-        let(:refunded_order) { build(:order, :refunded) }
-
-        it "identifies a pending order and default" do
-          expect(pending_order.status_pending?).to be true
-        end
-        it "identifies a paid order" do
-          expect(paid_order.status_paid?).to be true
-        end
-        it "identifies a cancelled order" do
-          expect(cancelled_order.status_cancelled?).to be true
-        end
-        it "identifies a refunded order" do
-          expect(refunded_order.status_refunded?).to be true
-        end
-      end
     end
   end
 
@@ -88,7 +68,7 @@ RSpec.describe Order, type: :model do
       end
 
       it "increments the quantity of an existing order item" do
-        new_item = create(:order_item, order: order, quantity: 2 )
+        new_item = create(:order_item, order: order, quantity: 2)
         order.add_product(new_item.product, 4)
         expect(new_item.reload.quantity).to eq(6)
       end

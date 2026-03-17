@@ -10,6 +10,24 @@ class Order < ApplicationRecord
     update!(total_amount: order_items.sum("quantity * unit_price"))
   end
 
+  def pay!
+    raise "Order already paid" unless status_pending?
+
+    update!(status: :paid)
+  end
+
+  def cancel!
+    raise "Cannot cancel paid order" unless status_pending?
+
+    update!(status: :cancelled)
+  end
+
+  def refund!
+    raise "Only paid orders can be refunded" unless status_paid?
+
+    update!(status: :refunded)
+  end
+
   def add_product(product, quantity)
     item = order_items.find_by(product: product)
 

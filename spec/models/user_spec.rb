@@ -14,7 +14,7 @@ RSpec.describe User, type: :model do
       it { should validate_length_of(:email).is_at_least(6).is_at_most(254) }      
       it { should validate_uniqueness_of(:email).case_insensitive }      
       it "rejects invalid emails" do
-        invalid_emails = ["invalid", "test@", "@test.com"]
+        invalid_emails = [ "invalid", "test@", "@test.com" ]
 
         invalid_emails.each do |email|
           user.email = email

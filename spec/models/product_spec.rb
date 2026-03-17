@@ -23,7 +23,7 @@ RSpec.describe Product, type: :model do
     end
 
     describe "active" do
-      it { should validate_inclusion_of(:active).in_array([true, false]) }
+      it { should validate_inclusion_of(:active).in_array([ true, false ]) }
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe Product, type: :model do
       let!(:inactive_product) { create(:product, active: false) }
 
       it "returns only active products" do
-        expect(active_products).to match_array([active_product])
+        expect(active_products).to match_array([ active_product ])
       end
     end
 
@@ -83,7 +83,7 @@ RSpec.describe Product, type: :model do
       let!(:inactive) { create(:product, active: false, stock: 10) }
 
       it "returns only active products with stock" do
-        expect(available_products).to match_array([available_product])
+        expect(available_products).to match_array([ available_product ])
       end
     end
   end

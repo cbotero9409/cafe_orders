@@ -9,7 +9,7 @@ class CreateOrderItems < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :order_items, [:order_id, :product_id], unique: true
+    add_index :order_items, [ :order_id, :product_id ], unique: true
     
     add_check_constraint :order_items, "quantity >= 1", name: "quantity_min_1"
     add_check_constraint :order_items, "unit_price > 0", name: "unit_price_positive"
