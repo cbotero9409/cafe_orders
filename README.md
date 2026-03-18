@@ -1,24 +1,79 @@
-# README
+# Café Orders
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Ruby on Rails backend application for managing café orders.
 
-Things you may want to cover:
+The system models a simple commerce domain where users can place orders containing multiple products.
 
-* Ruby version
+## Domain Model
 
-* System dependencies
+Core entities:
 
-* Configuration
+- **User** – represents a customer or admin
+- **Product** – items available for purchase
+- **Order** – a purchase made by a user
+- **OrderItem** – a product within an order
 
-* Database creation
+Relationships:
 
-* Database initialization
+User
+→ has many Orders
 
-* How to run the test suite
+Order
+→ belongs to User
+→ has many OrderItems
 
-* Services (job queues, cache servers, search engines, etc.)
+OrderItem
+→ belongs to Order
+→ belongs to Product
 
-* Deployment instructions
+Product
+→ referenced by OrderItems
 
-* ...
+## Key Design Decisions
+
+- Prices are stored as integers (COP) to avoid floating point errors.
+- OrderItem stores `unit_price` to preserve historical pricing.
+- Orders store `total_amount` as a financial snapshot.
+- Database constraints enforce critical invariants:
+  - quantity ≥ 1
+  - price > 0
+  - stock ≥ 0
+- Orders are treated as financial records and cannot be destroyed once items exist.
+
+## Tech Stack
+
+- Ruby on Rails
+- PostgreSQL
+- RSpec
+- FactoryBot
+- Shoulda Matchers
+
+## Setup
+
+- Clone the repository:
+
+    git clone https://github.com/cbotero9409/cafe_orders.git
+    cd cafe_orders
+
+- Install dependencies:
+
+    bundle install
+
+
+- Setup the database:
+
+    rails db:create
+    rails db:migrate
+
+
+- Run the test suite:
+
+    bundle exec rspec
+
+
+## Future Improvements
+
+- Authentication with Devise
+- Order services (checkout, refunds)
+- Admin interface for product management
+- Authorization policies
