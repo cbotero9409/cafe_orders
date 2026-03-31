@@ -24,7 +24,6 @@ module Orders
           )
         end
 
-        order.total_amount = order.order_items.sum(&:line_total)
         order.save!
       end
 
@@ -35,10 +34,6 @@ module Orders
 
     rescue ActiveRecord::RecordInvalid => e
       failure(e.record.errors.full_messages)
-
-    rescue StandardError => e
-      Rails.logger.error("CreateOrder failed: #{e.message}")
-      raise e
     end
 
     private

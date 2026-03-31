@@ -1,14 +1,20 @@
 class Order < ApplicationRecord
   enum :status, { pending: 0, paid: 1, cancelled: 2, refunded: 3 }, prefix: true
 
+  before_validation :calculate_total!
+
   belongs_to :user
   has_many :order_items, dependent: :restrict_with_error
 
-  validates :total_amount, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :total_amount, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  def recalculate_total!
-    update!(total_amount: order_items.sum("quantity * unit_price"))
+  def calculate_total!
+    self.total_amount = order_items.sum(&:line_total)
   end
+
+  # def recalculate_total!
+  #   update!(total_amount: order_items.sum(&:line_total))
+  # end
 
   def pay!
     raise "Order already paid" unless status_pending?
