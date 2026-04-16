@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_05_131447) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_15_130823) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,7 +58,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_05_131447) do
     t.integer "role", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
     t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.check_constraint "char_length(email::text) >= 6", name: "email_min_length_6"
     t.check_constraint "char_length(name::text) >= 2", name: "name_min_length_2"
   end
