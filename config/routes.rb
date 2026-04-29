@@ -1,8 +1,16 @@
 Rails.application.routes.draw do
   devise_for :users
+
   namespace :api do
     namespace :v1 do
       resources :orders, only: [:create]
+
+      namespace :auth do
+        post :signup
+        post :login
+        delete :logout
+        get :me
+      end
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -82,3 +82,7 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+def json
+  JSON.parse(response.body)
+end
