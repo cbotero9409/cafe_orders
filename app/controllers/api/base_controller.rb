@@ -1,8 +1,5 @@
 class Api::BaseController < ActionController::API
-  private
+  include Devise::Controllers::Helpers
 
-  def current_user
-    # temporary placeholder (later replaced by Devise or JWT)
-    nil
-  end
+  before_action :authenticate_user!
 end

@@ -20,9 +20,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
     end
 
     before do
-      allow_any_instance_of(Api::BaseController)
-        .to receive(:current_user)
-        .and_return(user)
+      sign_in user
     end
 
     context "when request is valid" do
