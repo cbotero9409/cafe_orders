@@ -11,6 +11,8 @@ class User < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2 }
   validates :email, presence: true, length: { in: 6..254 }, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
 
+  has_many :orders
+
   def normalize_email
     self.email = email.downcase.strip if email.present?
   end
