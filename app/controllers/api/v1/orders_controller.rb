@@ -1,5 +1,5 @@
 class Api::V1::OrdersController < Api::BaseController
-  before_action :authenticate_user!
+  # before_action :require_admin!, only: [:create]
 
   def index
     orders = current_user.orders.includes(:order_items)
@@ -8,9 +8,9 @@ class Api::V1::OrdersController < Api::BaseController
   end
 
   def show
-    order = current_user.orders.find(params[:id])
+    order = current_user.orders.includes(:order_items).find(params[:id])
 
-    render json: OrderSerializer.new(order)
+    render json: OrderSerializer.new(order, include: [:order_items])
   end
   
   def create
