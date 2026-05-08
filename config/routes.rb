@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :orders, only: [:create, :index, :show]
 
+      resources :products, only: [:index, :show]
+
       namespace :auth do
         post :signup
         post :login
