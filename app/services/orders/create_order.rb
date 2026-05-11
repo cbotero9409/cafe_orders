@@ -27,6 +27,7 @@ module Orders
         order.save!
       end
 
+      Orders::SendConfirmationJob.perform_later(order.id)
       success(order)
 
     rescue ActiveRecord::RecordNotFound => e
