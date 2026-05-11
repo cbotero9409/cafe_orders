@@ -8,8 +8,8 @@ RSpec.describe "Api::V1::Orders", type: :request do
   let(:user) { create(:user) }
 
   before do
-      sign_in user
-    end
+    sign_in user
+  end
 
   describe "POST /api/v1/orders" do
     let!(:product) { create(:product, price: 1000) }
