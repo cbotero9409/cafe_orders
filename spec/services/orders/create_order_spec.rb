@@ -29,6 +29,8 @@ RSpec.describe Orders::CreateOrder do
           expect(order.user).to eq(user)
           expect(order.order_items.size).to eq(2)
           expect(order.total_amount).to eq(2 * 1000 + 1 * 2000)
+
+          expect(Orders::SendConfirmationJob).to have_been_enqueued.with(order.id)
         end
       end
     end
