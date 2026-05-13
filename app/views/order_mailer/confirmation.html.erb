@@ -1,0 +1,7 @@
+<h1>Order Confirmation</h1>
+
+<p>Hello <%= @user.name %>,</p>
+
+<p>Your order #<%= @order.id %> has been confirmed.</p>
+
+<p>Total: <%= number_to_currency(@order.total_amount, unit: "$ ", precision: 0, delimiter: ".") %></p>
