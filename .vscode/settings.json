@@ -1,6 +1,12 @@
 {
     "kiroAgent.configureMCP": "Disabled",
     "rubyLsp.enabledFeatures": {
-        "diagnostics": false
+        "diagnostics": false,
+        "formatting": true
+    },
+    "rubyLsp.formatter": "rubocop_internal",
+    "[ruby]": {
+        "editor.defaultFormatter": "Shopify.ruby-lsp",
+        "editor.formatOnSave": true
     }
 }
