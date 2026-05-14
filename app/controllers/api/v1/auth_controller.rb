@@ -1,5 +1,5 @@
 class Api::V1::AuthController < Api::BaseController
-  skip_before_action :authenticate_user!, only: [:signup, :login]
+  skip_before_action :authenticate_user!, only: [ :signup, :login ]
 
   def signup
     user = User.new(signup_params)
@@ -19,7 +19,7 @@ class Api::V1::AuthController < Api::BaseController
       sign_in(user)
       render json: { user: user }, status: :ok
     else
-      render json: { errors: ["Invalid email or password"] }, status: :unauthorized
+      render json: { errors: [ "Invalid email or password" ] }, status: :unauthorized
     end
   end
 
@@ -34,7 +34,7 @@ class Api::V1::AuthController < Api::BaseController
 
   private
 
-  def signup_params
-    params.require(:user).permit(:name, :email, :password, :password_confirmation, :role)
-  end
+    def signup_params
+      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    end
 end
