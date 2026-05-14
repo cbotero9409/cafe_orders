@@ -10,3 +10,10 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 # Disable trailing whitespace warnings
 Layout/TrailingWhitespace:
   Enabled: false
+
+Layout/IndentationWidth:
+  Enabled: true
+
+Layout/DefEndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: def
