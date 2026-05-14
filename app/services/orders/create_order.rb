@@ -6,8 +6,8 @@ module Orders
     end
 
     def call
-      return failure(["User is required"]) if @user.blank?
-      return failure(["Items cannot be empty"]) if @items.blank?
+      return failure([ "User is required" ]) if @user.blank?
+      return failure([ "Items cannot be empty" ]) if @items.blank?
 
       order = nil
 
@@ -31,7 +31,7 @@ module Orders
       success(order)
 
     rescue ActiveRecord::RecordNotFound => e
-      failure(["Product not found: #{e.message}"])
+      failure([ "Product not found: #{e.message}" ])
 
     rescue ActiveRecord::RecordInvalid => e
       failure(e.record.errors.full_messages)
@@ -39,9 +39,9 @@ module Orders
 
     private
 
-    def success(order)
-      ApplicationService::Result.new(data: order)
-    end
+      def success(order)
+        ApplicationService::Result.new(data: order)
+      end
 
     def failure(errors)
       ApplicationService::Result.new(errors: errors)

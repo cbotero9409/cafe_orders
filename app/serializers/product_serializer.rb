@@ -3,4 +3,3 @@ class ProductSerializer
 
   attributes :name, :description, :price, :stock, :active
 end
-

@@ -1,5 +1,5 @@
 class Api::V1::ProductsController < Api::BaseController
-  skip_before_action :authenticate_user!, only: [:index, :show]
+  skip_before_action :authenticate_user!, only: [ :index, :show ]
 
   def index
     render json: ProductSerializer.new(products)
@@ -13,14 +13,14 @@ class Api::V1::ProductsController < Api::BaseController
 
   private
 
-  def products
-    case params[:scope]
-    when "active"
-      Product.active
-    when "available"
-      Product.available
-    else
-      Product.all
+    def products
+      case params[:scope]
+      when "active"
+        Product.active
+      when "available"
+        Product.available
+      else
+        Product.all
+      end
     end
-  end
 end
