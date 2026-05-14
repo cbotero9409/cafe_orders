@@ -6,4 +6,3 @@ class OrderSerializer
 
   has_many :order_items, serializer: OrderItemSerializer
 end
-

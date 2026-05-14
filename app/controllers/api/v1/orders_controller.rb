@@ -10,7 +10,7 @@ class Api::V1::OrdersController < Api::BaseController
   def show
     order = current_user.orders.includes(:order_items).find(params[:id])
 
-    render json: OrderSerializer.new(order, include: [:order_items])
+    render json: OrderSerializer.new(order, include: [ :order_items ])
   end
   
   def create
@@ -28,7 +28,7 @@ class Api::V1::OrdersController < Api::BaseController
 
   private
 
-  def order_params
-    params.require(:order).permit(items: [:product_id, :quantity])
-  end
+    def order_params
+      params.require(:order).permit(items: [ :product_id, :quantity ])
+    end
 end

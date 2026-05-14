@@ -3,4 +3,3 @@ class OrderItemSerializer
 
   attributes :product_id, :quantity, :unit_price
 end
-
