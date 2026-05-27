@@ -74,3 +74,4 @@ end
 gem "jsonapi-serializer", "~> 2.2"
 
 gem "devise", "~> 5.0"
+gem "tailwindcss-rails"
