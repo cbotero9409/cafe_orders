@@ -30,6 +30,9 @@
 
 /public/assets
 
+# Ignore Tailwind compiled output (regenerated on deploy via assets:precompile)
+/app/assets/builds/*.css
+
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
