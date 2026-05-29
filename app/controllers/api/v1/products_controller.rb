@@ -41,7 +41,6 @@ class Api::V1::ProductsController < Api::BaseController
 
   private
 
-<<<<<<< products_complete_functionality
   def product_params
     params.require(:product).permit(:name, :description, :price, :active)
   end
@@ -54,16 +53,6 @@ class Api::V1::ProductsController < Api::BaseController
       Product.active
     else
       Product.available
-=======
-    def products
-      case params[:scope]
-      when "active"
-        Product.active
-      when "available"
-        Product.available
-      else
-        Product.all
-      end
->>>>>>> main
     end
+  end
 end
