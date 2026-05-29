@@ -45,5 +45,34 @@
         <%= product.stock %> in stock
       </span>
     </div>
+
+    <% if product.available? %>
+      <div data-controller="cart"
+           data-cart-max-value="<%= product.stock %>"
+           class="flex items-center justify-between gap-3 pt-2">
+
+        <div class="flex items-center gap-1">
+          <button type="button"
+                  data-action="click->cart#decrement"
+                  class="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-600 font-bold text-sm transition-colors select-none">
+            −
+          </button>
+          <span data-cart-target="quantity"
+                class="w-8 text-center text-sm font-semibold text-stone-700">1</span>
+          <button type="button"
+                  data-action="click->cart#increment"
+                  class="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-600 font-bold text-sm transition-colors select-none">
+            +
+          </button>
+        </div>
+
+        <%= form_with url: add_to_cart_path(product_id: product.id), method: :post,
+                      data: { turbo_frame: "_top" } do |f| %>
+          <%= f.hidden_field :quantity, value: 1, data: { cart_target: "input" } %>
+          <%= f.submit "Add to Cart",
+                class: "bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer" %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </article>

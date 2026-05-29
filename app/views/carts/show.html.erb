@@ -1,0 +1,66 @@
+<% content_for :title, "Cart — Cafe Orders" %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-stone-800">Your Cart</h1>
+    <%= link_to "← Continue Shopping", products_path,
+          class: "text-sm text-amber-700 hover:text-amber-900 font-medium transition-colors" %>
+  </div>
+
+  <% if @cart_items.any? %>
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
+      <div class="divide-y divide-stone-100">
+        <% @cart_items.each do |item| %>
+          <div class="flex items-center gap-4 p-5">
+            <div class="text-3xl select-none">☕</div>
+
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-stone-800 truncate"><%= item[:product].name %></p>
+              <p class="text-sm text-stone-400">$<%= number_with_delimiter(item[:product].price) %> each</p>
+            </div>
+
+            <%= form_with url: update_cart_item_path(product_id: item[:product].id), method: :patch,
+                          class: "flex items-center gap-2" do |f| %>
+              <%= f.number_field :quantity,
+                    value: item[:quantity], min: 1, max: item[:product].stock,
+                    class: "w-16 text-center border border-stone-200 rounded-lg px-2 py-1 text-sm
+                            focus:outline-none focus:ring-2 focus:ring-amber-500" %>
+              <%= f.submit "Update",
+                    class: "text-xs text-amber-700 hover:text-amber-900 font-medium cursor-pointer transition-colors" %>
+            <% end %>
+
+            <p class="font-semibold text-amber-700 w-24 text-right">
+              $<%= number_with_delimiter(item[:subtotal]) %>
+            </p>
+
+            <%= form_with url: remove_from_cart_path(product_id: item[:product].id), method: :delete do |f| %>
+              <%= f.submit "×",
+                    class: "text-stone-300 hover:text-red-500 cursor-pointer text-2xl font-bold leading-none transition-colors" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="bg-stone-50 px-5 py-4 flex items-center justify-between border-t border-stone-100">
+        <span class="text-base font-semibold text-stone-700">Total</span>
+        <span class="text-xl font-bold text-amber-800">$<%= number_with_delimiter(@total) %></span>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end">
+      <button class="bg-amber-800 hover:bg-amber-900 text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer">
+        Place Order
+      </button>
+    </div>
+  <% else %>
+    <div class="flex flex-col items-center justify-center py-24 text-stone-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mb-4 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <p class="text-lg font-medium">Your cart is empty</p>
+      <p class="text-sm mt-1">Add some products to get started</p>
+      <%= link_to "Browse Menu", products_path,
+            class: "mt-4 text-amber-700 hover:text-amber-900 font-medium transition-colors" %>
+    </div>
+  <% end %>
+</div>

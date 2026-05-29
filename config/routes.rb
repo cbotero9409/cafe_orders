@@ -26,5 +26,11 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   resources :products, only: [ :index ]
+
+  resource :cart, only: [ :show ]
+  post   "cart/add/:product_id",    to: "carts#add",    as: :add_to_cart
+  delete "cart/remove/:product_id", to: "carts#remove", as: :remove_from_cart
+  patch  "cart/update/:product_id", to: "carts#update", as: :update_cart_item
+
   root "products#index"
 end
