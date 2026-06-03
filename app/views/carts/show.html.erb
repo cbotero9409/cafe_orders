@@ -48,9 +48,10 @@
     </div>
 
     <div class="mt-6 flex justify-end">
-      <button class="bg-amber-800 hover:bg-amber-900 text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer">
-        Place Order
-      </button>
+      <%= form_with url: orders_path, method: :post do |f| %>
+        <%= f.submit "Place Order",
+              class: "bg-amber-800 hover:bg-amber-900 text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer" %>
+      <% end %>
     </div>
   <% else %>
     <div class="flex flex-col items-center justify-center py-24 text-stone-400">
