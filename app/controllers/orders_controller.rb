@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  # before_action :authenticate_user! TO DO: Implement authentication
+  before_action :authenticate_user! #TO DO: Implement authentication
 
   def create
     items = cart_items_from_session
