@@ -1,0 +1,38 @@
+<% content_for :title, "Order Confirmation — Cafe Orders" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="mb-8 text-center">
+    <div class="text-5xl mb-3">✓</div>
+    <h1 class="text-3xl font-bold text-stone-800">Order Placed!</h1>
+    <p class="text-stone-500 mt-2">Order #<%= @order.id %> · <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden mb-6">
+    <div class="divide-y divide-stone-100">
+      <% @order.order_items.each do |item| %>
+        <div class="flex items-center gap-4 p-5">
+          <div class="text-3xl select-none">☕</div>
+
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-stone-800 truncate"><%= item.product.name %></p>
+            <p class="text-sm text-stone-400">$<%= number_with_delimiter(item.unit_price) %> × <%= item.quantity %></p>
+          </div>
+
+          <p class="font-semibold text-amber-700 w-24 text-right">
+            $<%= number_with_delimiter(item.line_total) %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="bg-stone-50 px-5 py-4 flex items-center justify-between border-t border-stone-100">
+      <span class="text-base font-semibold text-stone-700">Total</span>
+      <span class="text-xl font-bold text-amber-800">$<%= number_with_delimiter(@order.total_amount) %></span>
+    </div>
+  </div>
+
+  <div class="flex justify-center">
+    <%= link_to "Browse Menu", products_path,
+          class: "bg-amber-800 hover:bg-amber-900 text-white font-semibold px-6 py-3 rounded-xl transition-colors" %>
+  </div>
+</div>

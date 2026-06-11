@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { sessions: "users/sessions" }
 
   namespace :api do
     namespace :v1 do
@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   resources :products, only: [ :index ]
+
+  resources :orders, only: [ :index, :create, :show ]
 
   resource :cart, only: [ :show ]
   post   "cart/add/:product_id",    to: "carts#add",    as: :add_to_cart
