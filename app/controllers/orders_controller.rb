@@ -1,5 +1,9 @@
 class OrdersController < ApplicationController
-  before_action :authenticate_user! #TO DO: Implement authentication
+  before_action :authenticate_user!
+
+  def index
+    @orders = current_user.orders.includes(order_items: :product).order(created_at: :desc)
+  end
 
   def create
     items = cart_items_from_session
@@ -8,10 +12,6 @@ class OrdersController < ApplicationController
       redirect_to cart_path, alert: "Your cart is empty."
       return
     end
-
-    # debugger
-
-    current_user ||= User.first # Temporary: Replace with actual user authentication
 
     result = Orders::CreateOrder.call(user: current_user, items: items)
 
@@ -24,7 +24,6 @@ class OrdersController < ApplicationController
   end
 
   def show
-    current_user ||= User.first # Temporary: Replace with actual user authentication
     @order = current_user.orders.includes(order_items: :product).find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to root_path, alert: "Order not found."
