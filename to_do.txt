@@ -3,8 +3,6 @@ only admin
 
 admin authorization on the web (currently API only)
 
-fix API auth: unauthenticated requests return 302 instead of 401
-
 expose order pay!/cancel!/refund! through a controller (web or API)
 
 test debt: pending specs (OrderMailer, auth/products/orders helpers), no web controller/system specs
