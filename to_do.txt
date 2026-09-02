@@ -4,5 +4,3 @@ only admin
 admin authorization on the web (currently API only)
 
 expose order pay!/cancel!/refund! through a controller (web or API)
-
-test debt: pending specs (OrderMailer, auth/products/orders helpers), no web controller/system specs
