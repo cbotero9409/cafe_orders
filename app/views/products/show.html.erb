@@ -1,0 +1,81 @@
+<% content_for :title, "#{@product.name} — Cafe Orders" %>
+
+<% inactive = !@product.active? %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <%= link_to "← Back to Menu", products_path,
+          class: "text-sm text-amber-700 hover:text-amber-900 font-medium transition-colors" %>
+  </div>
+
+  <div class="<%= inactive ? 'bg-stone-100 border-stone-200 opacity-60' : 'bg-white border-stone-100' %> rounded-2xl shadow-sm border overflow-hidden">
+    <div class="<%= inactive ? 'bg-stone-200 grayscale' : 'bg-amber-50' %> flex items-center justify-center h-64 text-8xl select-none">
+      ☕
+    </div>
+
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-start justify-between gap-2">
+        <h1 class="text-2xl font-bold <%= inactive ? 'text-stone-400' : 'text-stone-800' %>">
+          <%= @product.name %>
+        </h1>
+        <% if @product.available? %>
+          <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+            Available
+          </span>
+        <% elsif @product.active? %>
+          <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+            Out of stock
+          </span>
+        <% else %>
+          <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-stone-200 text-stone-400">
+            Inactive
+          </span>
+        <% end %>
+      </div>
+
+      <% if @product.description.present? %>
+        <p class="text-sm <%= inactive ? 'text-stone-400' : 'text-stone-500' %> leading-relaxed">
+          <%= @product.description %>
+        </p>
+      <% end %>
+
+      <div class="flex items-center justify-between pt-4 border-t <%= inactive ? 'border-stone-200' : 'border-stone-100' %>">
+        <span class="text-2xl font-bold <%= inactive ? 'text-stone-400' : 'text-amber-700' %>">
+          $<%= number_with_delimiter(@product.price) %>
+        </span>
+        <span class="text-sm text-stone-400">
+          <%= @product.stock %> in stock
+        </span>
+      </div>
+
+      <% if @product.available? %>
+        <div data-controller="cart"
+             data-cart-max-value="<%= @product.stock %>"
+             class="flex items-center justify-between gap-3 pt-2">
+
+          <div class="flex items-center gap-1">
+            <button type="button"
+                    data-action="click->cart#decrement"
+                    class="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-600 font-bold transition-colors select-none">
+              −
+            </button>
+            <span data-cart-target="quantity"
+                  class="w-10 text-center text-base font-semibold text-stone-700">1</span>
+            <button type="button"
+                    data-action="click->cart#increment"
+                    class="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-600 font-bold transition-colors select-none">
+              +
+            </button>
+          </div>
+
+          <%= form_with url: add_to_cart_path(product_id: @product.id), method: :post,
+                        data: { turbo_frame: "_top" } do |f| %>
+            <%= f.hidden_field :quantity, value: 1, data: { cart_target: "input" } %>
+            <%= f.submit "Add to Cart",
+                  class: "bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
