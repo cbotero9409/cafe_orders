@@ -2,3 +2,6 @@ products show, new, edit, destroy (web)
 with require_admin! before_action 
 
 expose order pay!/cancel!/refund! through a controller (web or API)
+
+web user own information
+web user administration by admin
