@@ -2,3 +2,11 @@ web user own information
 web user administration by admin
 
 expose order pay!/cancel!/refund! through a controller (web or API)
+
+CI: workflow runs `bin/rails test test:system` (Minitest) instead of `bundle exec rspec` — switch to rspec, remove leftover test/ dir
+API orders: remove commented-out require_admin! in Api::V1::OrdersController
+wire up cart_controller.js (quantity +/-) in the cart view, or delete it
+add text version of OrderMailer#confirmation email
+db/seeds.rb: seed an admin user and sample products for development
+authorization policies (Pundit) to replace ad-hoc role_admin? checks
+token-based API auth (API currently relies on session cookies)

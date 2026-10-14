@@ -1,33 +1,35 @@
 # Café Orders
 
-A Ruby on Rails backend application for managing café orders.
+A Ruby on Rails application for managing café orders.
 
-The system models a simple commerce domain where users can place orders containing multiple products.
+Customers browse a product catalog, fill a cart and check out; admins manage the catalog. The app serves both a server-rendered web frontend (Tailwind + Hotwire) and a JSON API under `/api/v1`.
+
+## Features
+
+- **Product catalog** – browse, filter (`available` / `active` / `all`) and search products, with Turbo Frames for in-place updates
+- **Shopping cart** – session-based cart (add, update quantity, remove) that survives logout
+- **Checkout & order history** – place orders from the cart and view your past orders
+- **Authentication** – Devise (web sessions + JSON auth endpoints)
+- **Admin product management** – admins can create, edit and deactivate products (web and API)
+- **Order confirmation emails** – sent asynchronously via a background job
 
 ## Domain Model
 
 Core entities:
 
-- **User** – represents a customer or admin
+- **User** – a customer or admin (`role` enum: `customer`, `admin`)
 - **Product** – items available for purchase
-- **Order** – a purchase made by a user
+- **Order** – a purchase made by a user (`status` enum: `pending`, `paid`, `cancelled`, `refunded`)
 - **OrderItem** – a product within an order
 
 Relationships:
 
-User
-→ has many Orders
-
-Order
-→ belongs to User
-→ has many OrderItems
-
-OrderItem
-→ belongs to Order
-→ belongs to Product
-
-Product
-→ referenced by OrderItems
+```
+User      → has many Orders
+Order     → belongs to User, has many OrderItems
+OrderItem → belongs to Order, belongs to Product
+Product   → referenced by OrderItems
+```
 
 ## Key Design Decisions
 
@@ -39,41 +41,82 @@ Product
   - price > 0
   - stock ≥ 0
 - Orders are treated as financial records and cannot be destroyed once items exist.
+- Products are soft-deleted (`active: false`) rather than removed.
+- Business logic lives in service objects (`Orders::CreateOrder`), shared by web and API controllers.
+- The cart lives in the session, not the database.
 
 ## Tech Stack
 
-- Ruby on Rails
+- Ruby on Rails 8
 - PostgreSQL
-- RSpec
-- FactoryBot
-- Shoulda Matchers
+- Devise (authentication)
+- Tailwind CSS, Turbo, Stimulus
+- jsonapi-serializer (API responses)
+- Solid Queue (background jobs)
+- RSpec, FactoryBot, Shoulda Matchers, Faker
+
+## API
+
+All endpoints are under `/api/v1` and return JSON. Authentication is session-based (cookie set by `login` / `signup`).
+
+| Method | Path | Access |
+| ------ | ---- | ------ |
+| `POST` | `/auth/signup` | public |
+| `POST` | `/auth/login` | public |
+| `DELETE` | `/auth/logout` | signed in |
+| `GET` | `/auth/me` | signed in |
+| `GET` | `/products`, `/products/:id` | public |
+| `POST` / `PATCH` / `DELETE` | `/products`, `/products/:id` | admin |
+| `GET` | `/orders`, `/orders/:id` | signed in (own orders) |
+| `POST` | `/orders` | signed in |
+
+Unauthenticated requests to protected endpoints return `401`; non-admins hitting admin endpoints get `403`.
 
 ## Setup
 
-- Clone the repository:
+Clone the repository:
 
-    git clone https://github.com/cbotero9409/cafe_orders.git
-    cd cafe_orders
+```bash
+git clone https://github.com/cbotero9409/cafe_orders.git
+cd cafe_orders
+```
 
-- Install dependencies:
+Install dependencies:
 
-    bundle install
+```bash
+bundle install
+```
 
+Set up the database:
 
-- Setup the database:
+```bash
+bin/rails db:create db:migrate
+```
 
-    rails db:create
-    rails db:migrate
+Run the app (Rails server + Tailwind watcher):
 
+```bash
+bin/dev
+```
 
-- Run the test suite:
+Then open http://localhost:3000. In development, emails open in the browser via `letter_opener`.
 
-    bundle exec rspec
+To make a user an admin, from `bin/rails console`:
 
+```ruby
+User.find_by(email: "you@example.com").role_admin!
+```
+
+Run the test suite:
+
+```bash
+bundle exec rspec
+```
 
 ## Future Improvements
 
-- Authentication with Devise
-- Order services (checkout, refunds)
-- Admin interface for product management
-- Authorization policies
+- Order lifecycle actions (pay, cancel, refund) exposed through controllers
+- User profile page and admin user management
+- Authorization policies (e.g. Pundit) instead of ad-hoc role checks
+- Token-based API authentication
+- Seed data for development

@@ -2,15 +2,15 @@
 
 ## Last Updated
 
-2026-08-31
+2026-10-14
 
 ## Repository State
 
 - **Current branch:** `main` (up to date with `origin/main`)
-- **Latest commit:** `a9532f6f78136f88dea1235f13ae2085a386d5ae`
-- **Latest commit message:** "Merge pull request #23 from cbotero9409/order_creation_frontend"
-- **Latest commit date:** 2026-06-11
-- **Uncommitted changes:** Yes — `to_do.txt` is modified (unstaged). It was previously an empty file and now contains a short task list: "products index, show", "products new, edit, destroy only admin", "devise views". This appears to be in-progress note-taking, not yet committed.
+- **Latest commit:** `16c22aff16c0a40e85dd2be60a749216efd69a19`
+- **Latest commit message:** "Merge pull request #24 from cbotero9409/products_actions"
+- **Latest commit date:** 2026-09-15
+- **Uncommitted changes:** README, `to_do.txt` and this file were refreshed on 2026-10-14.
 - Several stale feature branches exist locally/remotely (`cart_order_creation`, `devise_frontend`, `products_frontend`, `order_creation_frontend`, `products_api`, etc.) that appear to already be merged into `main`, plus open Dependabot branches.
 
 ## Current Implementation
@@ -30,11 +30,11 @@
 
 ### Testing
 - RSpec is the active test framework (FactoryBot, Shoulda Matchers, Faker configured). The default Rails `test/` (Minitest) directory still exists but appears to be leftover scaffolding, not the maintained suite (only one placeholder model test).
-- Current run: **94 examples, 5 failures, 4 pending** (verified by running `bundle exec rspec`).
-  - Pending: 4 auto-generated helper/mailer spec stubs (`Api::V1::AuthHelper`, `Api::V1::ProductsHelper`, `OrdersHelper`, `OrderMailer`) — never filled in.
-  - Failing: 5 examples in `spec/requests/api/v1/auth_spec.rb` and `spec/requests/api/v1/products_spec.rb`, all expecting `401 Unauthorized` for unauthenticated API requests but receiving `302 Found` (a redirect) instead — see [Discrepancies](#discrepancies).
+- Current run: **90 examples, 0 failures** (verified by running `bundle exec rspec` on 2026-10-14).
+  - The pending helper/mailer stub specs were removed; the 302-vs-401 API failures were fixed by `Api::BaseController#force_json_format`.
+- **CI does not run RSpec:** `.github/workflows/ci.yml` runs `bin/rails db:test:prepare test test:system` (Minitest), so the real suite is not exercised in CI.
 - Coverage exists for: models (`Order`, `OrderItem`, `Product`, `User`), the `Orders::CreateOrder` service, `Orders::SendConfirmationJob`, and API request specs for auth/products/orders.
-- No request/system specs exist for the web controllers (`ProductsController`, `CartsController`, `OrdersController` web views) or for Devise web flows.
+- Web controllers/views are intentionally not covered — test scope is limited to the critical path (models, services, API).
 
 ### Services / Business Logic
 - `ApplicationService::Base` / `ApplicationService::Result` provide a small service-object pattern (`.call` class method, `success?`/`failure?`/`data`/`errors`).
@@ -48,19 +48,21 @@
 
 ### Authorization
 - Role-based, enum-driven (`User#role`: `customer`/`admin`).
-- Enforced only in the API: `Api::BaseController#require_admin!` returns 403 for non-admins, applied to product `create`/`update`/`destroy`.
-- No authorization is enforced on the web side (no admin-only web controllers/views exist — `to_do.txt` lists this as still to do).
+- API: `Api::BaseController#require_admin!` returns 403 for non-admins, applied to product `create`/`update`/`destroy`.
+- Web: `ApplicationController#require_admin!` redirects non-admins to root with an alert, applied to `ProductsController` `new`/`create`/`edit`/`update`/`destroy`.
+- Checks are ad hoc (`role_admin?`), no policy objects.
 
 ### API
 - Namespaced under `/api/v1`: `products` (full CRUD), `orders` (`index`, `create`, `show`), and `auth` (`signup`, `login`, `logout`, `me`).
 - JSON responses are built with `jsonapi-serializer` (`ProductSerializer`, `OrderSerializer`, `OrderItemSerializer`).
 - `Api::BaseController` requires authentication by default; `products#index/show` and `auth#signup/login` opt out.
-- Known issue: unauthenticated requests to protected API endpoints redirect (302) instead of returning `401 Unauthorized` JSON — see [Discrepancies](#discrepancies).
+- `Api::BaseController` forces the request format to JSON (`force_json_format`) so Devise returns `401` rather than redirecting when a client omits the `Accept` header.
 
 ### Web Frontend
 - Server-rendered ERB views styled with Tailwind CSS, using Turbo Frames (`products_grid`) for filtering/search without full page reloads.
 - Stimulus controllers: `products_controller.js` (filter tabs + debounced search, submits the form via `requestSubmit`), `cart_controller.js` (client-side quantity increment/decrement, not yet wired into a view), plus the default `hello_controller.js` scaffold.
-- Product listing (`/products`) supports filter (`available`/`active`/`all`) and search (`ILIKE` on name) — index only, no show/new/edit/destroy views for products on the web side.
+- Product listing (`/products`) supports filter (`available`/`active`/`all`) and search (`ILIKE` on name); product cards link to a show page.
+- Admin-only product `new`/`edit`/`destroy` (soft delete) on the web, sharing a `_form` partial.
 
 ### Shopping Cart
 - Implemented as a **session-based** cart (no `Cart`/`CartItem` model): `session[:cart]` is a hash of `product_id => quantity`, managed entirely by `CartsController` (`show`, `add`, `remove`, `update`).
@@ -77,7 +79,7 @@
 
 ### Mailers
 - `OrderMailer#confirmation` sends an order confirmation email; HTML view exists (`app/views/order_mailer/confirmation.html.erb`), text view does not appear to exist.
-- Development delivery uses `letter_opener`; the `OrderMailer` itself has no meaningful spec coverage (stub only).
+- Development delivery uses `letter_opener`; `OrderMailer` has no dedicated spec (covered indirectly via the job spec).
 
 ## Feature Status
 
@@ -86,23 +88,25 @@
 - [x] Order creation/checkout (web + API), via `Orders::CreateOrder` service
 - [x] Order history and detail view (web + API), scoped to current user
 - [x] User authentication (Devise, web sessions + API session-based auth)
-- [~] Admin authorization — enforced in API (`require_admin!` on product CRUD) but not on the web
-- [~] Product API — full CRUD implemented, but unauthenticated-access handling returns the wrong status code (302 instead of 401) in 5 failing specs
-- [ ] Product management UI on the web (new/edit/destroy) — explicitly listed as not-yet-done in `to_do.txt`
+- [x] Admin authorization — `require_admin!` on product CRUD in both web and API
+- [x] Product API — full CRUD, correct 401/403 handling
+- [x] Product management UI on the web (show/new/edit/destroy, admin-only)
 - [ ] Order lifecycle actions (pay/cancel/refund) exposed via any controller — model methods exist but are unreachable
-- [ ] Background job / mailer test coverage — job has minimal coverage, mailer spec is an empty pending stub
+- [ ] User profile page and admin user management (web)
+- [ ] CI running the RSpec suite
 
 ## Current Development Focus
 
-Based on the repository state (uncommitted `to_do.txt`, most recent commits building out web order creation and Devise auth), the project has just finished the core "browse → cart → checkout → order history" flow for logged-in customers. The uncommitted `to_do.txt` indicates the next intended focus is **admin-only web product management** (new/edit/destroy views), consistent with the README's "Future Improvements" list (admin interface, authorization policies) and the fact that admin authorization currently only exists on the API side.
+The customer flow (browse → cart → checkout → order history) and admin product management are complete on both web and API. `to_do.txt` points next at **user-facing account pages** (own profile, admin user management) and **exposing order lifecycle transitions** (`pay!`/`cancel!`/`refund!`).
 
 ## Recommended Next Steps
 
-1. **Fix the failing API auth specs (already implemented, currently broken):** unauthenticated requests to `Api::BaseController`-protected endpoints return 302 instead of 401 — configure a JSON-aware Warden failure app for the API scope.
-2. **Partially implemented → finish:** extend role-based authorization to the web (admin-only routes/controllers), matching what already exists in the API.
-3. **Not yet implemented, per `to_do.txt`:** build web views/controllers for product `show`, `new`, `edit`, and `destroy`, restricted to admins.
-4. **Not yet implemented:** expose the existing `Order#pay!` / `cancel!` / `refund!` model methods through controller actions (web and/or API) — the domain logic exists but isn't reachable.
-5. **Test debt:** fill in the pending stub specs (`OrderMailer`, the three helper specs) or delete them if the corresponding helpers/mailers don't warrant dedicated tests; add request/system specs for the web `ProductsController`, `CartsController`, and `OrdersController`.
+1. **Make CI run RSpec:** replace `bin/rails test test:system` in `ci.yml` with `bundle exec rspec` and delete the leftover Minitest `test/` directory.
+2. **Order lifecycle:** expose `pay!`/`cancel!`/`refund!` through controller actions (API and/or web), with admin-only refunds.
+3. **User accounts:** a web page for users to view/edit their own info, and admin user management.
+4. **Small cleanups:** remove the commented-out `require_admin!` in `Api::V1::OrdersController`; wire `cart_controller.js` into the cart view or delete it; add a text version of the confirmation email.
+5. **Dev experience:** seed an admin user and sample products in `db/seeds.rb`.
+6. **Later:** authorization policies (Pundit) and token-based API auth.
 
 ## Architectural Notes
 
@@ -117,13 +121,11 @@ Based on the repository state (uncommitted `to_do.txt`, most recent commits buil
 
 ## Learning Progress
 
-- **Implemented/practiced:** ActiveRecord associations and enums, DB-level constraints, service objects, ActiveJob background jobs, ActionMailer, Devise authentication (both web and hand-integrated with an API-only controller), JSON serialization with `jsonapi-serializer`, Hotwire (Turbo Frames + Stimulus) for a dynamic filtering UI, session-based state (cart) as an alternative to a persisted model, RSpec/FactoryBot/Shoulda Matchers testing conventions.
-- **Partially explored:** role-based authorization (implemented for the API only, not the web); request/failure-mode handling for APIs (the 302-vs-401 issue reflects an incomplete understanding of Warden's failure app per controller type).
-- **Not yet explored (per `to_do.txt` and current gaps):** admin-restricted web CRUD flows, exposing state-machine-like transitions (`pay!`/`cancel!`/`refund!`) through controllers, system/feature testing (Capybara is installed but no system specs exist), authorization policy objects (e.g., Pundit/CanCanCan — currently authorization is done ad hoc via `role_admin?` checks).
+- **Implemented/practiced:** ActiveRecord associations and enums, DB-level constraints, service objects, ActiveJob background jobs, ActionMailer, Devise authentication (web and hand-integrated with an API-only controller, including Warden failure-app behavior per request format), role-based authorization on web and API, JSON serialization with `jsonapi-serializer`, Hotwire (Turbo Frames + Stimulus), session-based state (cart), RSpec/FactoryBot/Shoulda Matchers.
+- **Not yet explored:** exposing state-machine-like transitions (`pay!`/`cancel!`/`refund!`) through controllers, authorization policy objects (Pundit/CanCanCan), token-based API auth.
 
 ## Discrepancies
 
-- **README.md "Future Improvements"** lists "Authentication with Devise", "Order services (checkout, refunds)", and "Admin interface for product management" as future work. Devise authentication and the checkout order service (`Orders::CreateOrder`) are already implemented — the README is out of date. "Admin interface for product management" and "Authorization policies" remain accurate as still-outstanding (web-side admin UI and authorization are not implemented).
-- **`to_do.txt`** lists "devise views" as a to-do item, but Devise views are already present and customized in `app/views/devise/`. This item appears to already be complete despite being listed as pending, and the file itself is currently uncommitted.
-- **Test suite is not fully green:** 5 specs currently fail (`spec/requests/api/v1/auth_spec.rb`, `spec/requests/api/v1/products_spec.rb`) due to unauthenticated API requests returning 302 instead of 401. This is not documented anywhere but is directly observable by running `bundle exec rspec`.
-- **`Order#pay!`/`cancel!`/`refund!`** exist and are unit-tested at the model level, which could give the impression that order status transitions are a usable feature end-to-end. In fact no controller (web or API) exposes these actions, so they are not reachable by users.
+- **CI vs. test suite:** CI runs Minitest (`test/` only has a placeholder), so a green CI build says nothing about the RSpec suite.
+- **`Order#pay!`/`cancel!`/`refund!`** exist and are unit-tested at the model level, but no controller (web or API) exposes them, so they are not reachable by users.
+- **`cart_controller.js`** exists but is not attached to any view.
