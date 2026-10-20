@@ -17,3 +17,6 @@ Layout/IndentationWidth:
 Layout/DefEndAlignment:
   Enabled: true
   EnforcedStyleAlignWith: def
+
+Layout/IndentationConsistency:
+  EnforcedStyle: normal

@@ -39,9 +39,9 @@ module Orders
 
     private
 
-      def success(order)
-        ApplicationService::Result.new(data: order)
-      end
+    def success(order)
+      ApplicationService::Result.new(data: order)
+    end
 
     def failure(errors)
       ApplicationService::Result.new(errors: errors)

@@ -1,7 +1,7 @@
 class Api::V1::ProductsController < Api::BaseController
   skip_before_action :authenticate_user!, only: [ :index, :show ]
 
-  before_action :require_admin!, only: [:create, :update, :destroy]
+  before_action :require_admin!, only: [ :create, :update, :destroy ]
 
   def index
     render json: ProductSerializer.new(products)

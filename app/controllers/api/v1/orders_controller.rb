@@ -28,7 +28,7 @@ class Api::V1::OrdersController < Api::BaseController
 
   private
 
-    def order_params
-      params.require(:order).permit(items: [ :product_id, :quantity ])
-    end
+  def order_params
+    params.require(:order).permit(items: [ :product_id, :quantity ])
+  end
 end
