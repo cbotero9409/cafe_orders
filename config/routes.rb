@@ -29,6 +29,8 @@ Rails.application.routes.draw do
 
   resources :orders, only: [ :index, :create, :show ]
 
+  resource :profile, only: [ :show ]
+
   resource :cart, only: [ :show ]
   post   "cart/add/:product_id",    to: "carts#add",    as: :add_to_cart
   delete "cart/remove/:product_id", to: "carts#remove", as: :remove_from_cart

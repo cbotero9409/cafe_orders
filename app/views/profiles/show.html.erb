@@ -1,0 +1,69 @@
+<% content_for :title, "My Profile — Cafe Orders" %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-stone-800">My Profile</h1>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 mb-8">
+    <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0">
+        <p class="text-2xl font-bold text-stone-800 truncate"><%= @user.name %></p>
+        <p class="text-stone-500 mt-0.5 truncate"><%= @user.email %></p>
+      </div>
+      <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full
+        <%= @user.role_admin? ? 'bg-amber-100 text-amber-800' : 'bg-stone-100 text-stone-600' %>">
+        <%= @user.role.capitalize %>
+      </span>
+    </div>
+
+    <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-stone-100 text-sm">
+      <div>
+        <dt class="text-stone-400">Member since</dt>
+        <dd class="font-medium text-stone-700"><%= @user.created_at.strftime("%B %d, %Y") %></dd>
+      </div>
+      <div>
+        <dt class="text-stone-400">Orders placed</dt>
+        <dd class="font-medium text-stone-700"><%= @orders_count %></dd>
+      </div>
+      <div>
+        <dt class="text-stone-400">Total spent</dt>
+        <dd class="font-medium text-stone-700">$<%= number_with_delimiter(@total_spent) %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="text-xl font-bold text-stone-800">Recent Orders</h2>
+    <% if @orders_count > 0 %>
+      <%= link_to "View all →", orders_path,
+            class: "text-sm text-amber-700 hover:text-amber-900 font-medium transition-colors" %>
+    <% end %>
+  </div>
+
+  <% if @recent_orders.any? %>
+    <div class="space-y-3">
+      <% @recent_orders.each do |order| %>
+        <%= link_to order_path(order), class: "block bg-white rounded-2xl shadow-sm border border-stone-100 p-5 hover:border-amber-200 transition-colors" do %>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-stone-800">Order #<%= order.id %></p>
+              <p class="text-sm text-stone-400 mt-0.5"><%= order.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+              <p class="text-sm text-stone-500 mt-1"><%= order.order_items.size %> item(s)</p>
+            </div>
+            <div class="text-right">
+              <p class="text-lg font-bold text-amber-800">$<%= number_with_delimiter(order.total_amount) %></p>
+              <div class="mt-1"><%= order_status_badge(order) %></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="flex flex-col items-center justify-center py-16 text-stone-400">
+      <p class="text-lg font-medium">No orders yet</p>
+      <%= link_to "Browse Menu", products_path,
+            class: "mt-2 text-amber-700 hover:text-amber-900 font-medium transition-colors" %>
+    </div>
+  <% end %>
+</div>
