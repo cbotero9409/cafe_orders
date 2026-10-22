@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { sessions: "users/sessions" }
+  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
 
   namespace :api do
     namespace :v1 do
@@ -28,6 +28,8 @@ Rails.application.routes.draw do
   resources :products, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 
   resources :orders, only: [ :index, :create, :show ]
+
+  resource :profile, only: [ :show ]
 
   resource :cart, only: [ :show ]
   post   "cart/add/:product_id",    to: "carts#add",    as: :add_to_cart

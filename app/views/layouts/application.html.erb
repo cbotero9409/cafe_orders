@@ -43,6 +43,7 @@
 
             <% if user_signed_in? %>
               <%= link_to "My Orders", orders_path, class: "hover:text-amber-200 transition-colors font-medium" %>
+              <%= link_to current_user.name, profile_path, class: "hover:text-amber-200 transition-colors font-medium truncate max-w-[10rem]" %>
               <%= link_to "Logout", destroy_user_session_path,
                     data: { turbo_method: :delete },
                     class: "hover:text-amber-200 transition-colors font-medium" %>
