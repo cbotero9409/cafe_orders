@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3000
+
+### Health check
+GET {{baseUrl}}/up
+
+### Sign up
+POST {{baseUrl}}/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "user": {
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }
+}
+
+### Log in (session cookie is kept by REST Client for the requests below)
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Current user
+GET {{baseUrl}}/api/v1/auth/me
+
+### List products
+GET {{baseUrl}}/api/v1/products
+
+### List orders
+GET {{baseUrl}}/api/v1/orders
