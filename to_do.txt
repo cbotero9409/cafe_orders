@@ -1,9 +1,5 @@
-Priority: API/backend first, web pages after (reuse the same services)
-
-CI: workflow runs `bin/rails test test:system` (Minitest) instead of `bundle exec rspec` — switch to rspec, remove leftover test/ dir
-
 API user management:
-  own account: PATCH /api/v1/auth/me (name, email, password with current password), maybe DELETE
+  own account: PATCH /api/v1/auth/me (name, email, password with current password), maybe DELETE — reuse Users::UpdateProfile (already used by the web edit page)
   admin: GET /api/v1/users, GET /api/v1/users/:id, PATCH /api/v1/users/:id (role, details), deactivate user
   rules in services (e.g. Users::UpdateRole: can't demote yourself, can't remove the last admin)
   UserSerializer (jsonapi-serializer) instead of rendering the raw model in auth#me
@@ -13,10 +9,12 @@ API orders: expose order pay!/cancel!/refund! through the API (refund admin-only
 API orders: remove commented-out require_admin! in Api::V1::OrdersController
 token-based API auth (API currently relies on session cookies)
 
-web user own information (after the API version)
 web user administration by admin (after the API version)
 
 wire up cart_controller.js (quantity +/-) in the cart view, or delete it
 add text version of OrderMailer#confirmation email
-db/seeds.rb: seed an admin user and sample products for development
+db/seeds.rb: seed sample products for development (dev users incl. admin already seeded)
 authorization policies (Pundit) to replace ad-hoc role_admin? checks
+
+Ideas for later:
+  order_historic table: record each order status change (pending/paid/cancelled/refunded) with who changed it and when

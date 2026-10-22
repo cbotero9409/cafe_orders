@@ -2,14 +2,14 @@
 
 ## Last Updated
 
-2026-10-20
+2026-10-22
 
 ## Repository State
 
 - **Current branch:** `main` (up to date with `origin/main`)
-- **Latest code commit:** `16c22af` (merge of PR #24, 2026-09-15)
+- **Latest code commit:** `743f7fa` (merge of PR #25, 2026-10-22)
 - **Last docs refresh:** `8170cc5` (2026-10-16)
-- **Uncommitted changes:** none
+- **Branch in progress:** `update_docs_and_ci` (CI now runs RSpec, `CLAUDE.md` added), not yet merged
 
 ## Current Implementation
 
@@ -27,16 +27,17 @@
 - Foreign keys enforced at the DB level for `order_items` → `orders`/`products` and `orders` → `users`.
 
 ### Testing
-- RSpec is the active test framework (FactoryBot, Shoulda Matchers, Faker configured). The default Rails `test/` (Minitest) directory still exists but appears to be leftover scaffolding, not the maintained suite (only one placeholder model test).
-- Current run: **90 examples, 0 failures** (verified by running `bundle exec rspec` on 2026-10-14).
+- RSpec is the active test framework (FactoryBot, Shoulda Matchers, Faker configured). The leftover Rails `test/` (Minitest) directory has been removed.
+- Current run: **98 examples, 0 failures** (verified by running `bundle exec rspec` on 2026-10-22).
   - The pending helper/mailer stub specs were removed; the 302-vs-401 API failures were fixed by `Api::BaseController#force_json_format`.
-- **CI does not run RSpec:** `.github/workflows/ci.yml` runs `bin/rails db:test:prepare test test:system` (Minitest), so the real suite is not exercised in CI.
-- Coverage exists for: models (`Order`, `OrderItem`, `Product`, `User`), the `Orders::CreateOrder` service, `Orders::SendConfirmationJob`, and API request specs for auth/products/orders.
+- **CI runs RSpec:** `.github/workflows/ci.yml` runs `bin/rails db:test:prepare && bundle exec rspec` (on branch `update_docs_and_ci`; the Chrome install and system-test screenshot upload were removed).
+- Coverage exists for: models (`Order`, `OrderItem`, `Product`, `User`), the `Orders::CreateOrder` and `Users::UpdateProfile` services, `Orders::SendConfirmationJob`, and API request specs for auth/products/orders.
 - Web controllers/views are intentionally not covered — test scope is limited to the critical path (models, services, API).
 
 ### Services / Business Logic
 - `ApplicationService::Base` / `ApplicationService::Result` provide a small service-object pattern (`.call` class method, `success?`/`failure?`/`data`/`errors`).
-- `Orders::CreateOrder` is the only service implemented: builds an order + order_items inside a transaction, copies `product.price` into `unit_price` at creation time, enqueues a confirmation job, and returns a `Result`. Used by both the web `OrdersController#create` and `Api::V1::OrdersController#create`.
+- Two services are implemented. `Users::UpdateProfile` updates a user's own profile (name freely; current password required only to change email or password) and is used by the web `Users::RegistrationsController`; it is meant to be reused by the future `PATCH /api/v1/auth/me`.
+- `Orders::CreateOrder`: builds an order + order_items inside a transaction, copies `product.price` into `unit_price` at creation time, enqueues a confirmation job, and returns a `Result`. Used by both the web `OrdersController#create` and `Api::V1::OrdersController#create`.
 
 ### Authentication
 - Devise is installed and wired for the `User` model (`database_authenticatable`, `registerable`, `recoverable`, `rememberable`, `validatable`).
@@ -56,10 +57,14 @@
 - `Api::BaseController` requires authentication by default; `products#index/show` and `auth#signup/login` opt out.
 - `Api::BaseController` forces the request format to JSON (`force_json_format`) so Devise returns `401` rather than redirecting when a client omits the `Accept` header.
 
+### Code Style / Tooling
+- RuboCop enforces style in CI (`bin/rubocop`); `Layout/IndentationConsistency` is set to `normal` in `.rubocop.yml` (commit `fdce4c8`, which also normalized code style across controllers/services and bumped `brakeman` to 8.1.0).
+
 ### Web Frontend
 - Server-rendered ERB views styled with Tailwind CSS, using Turbo Frames (`products_grid`) for filtering/search without full page reloads.
 - Stimulus controllers: `products_controller.js` (filter tabs + debounced search, submits the form via `requestSubmit`), `cart_controller.js` (client-side quantity increment/decrement, not yet wired into a view), plus the default `hello_controller.js` scaffold.
 - Product listing (`/products`) supports filter (`available`/`active`/`all`) and search (`ILIKE` on name); product cards link to a show page.
+- Logged-in users have a read-only profile page (`/profile`, `ProfilesController`) and can edit their own profile through Devise's edit-registration page (custom `Users::RegistrationsController` using `Users::UpdateProfile`). Account deletion is blocked (orders are financial records). Flash messages render in the layout, Devise error box restyled, and orders list shows status badges (`OrdersHelper#order_status_badge`).
 - Admin-only product `new`/`edit`/`destroy` (soft delete) on the web, sharing a `_form` partial.
 
 ### Shopping Cart
@@ -91,8 +96,9 @@
 - [x] Product management UI on the web (show/new/edit/destroy, admin-only)
 - [ ] Order lifecycle actions (pay/cancel/refund) exposed via any controller — model methods exist but are unreachable
 - [ ] User management API (own account + admin) — API-first priority
-- [ ] User profile page and admin user management (web), after the API version
-- [ ] CI running the RSpec suite
+- [x] User profile page and self-edit (web, via `Users::UpdateProfile`)
+- [ ] Admin user management (web), after the API version
+- [x] CI running the RSpec suite (pending merge of `update_docs_and_ci`)
 
 ## Current Development Focus
 
@@ -100,17 +106,16 @@ The customer flow (browse → cart → checkout → order history) and admin pro
 
 ## Recommended Next Steps
 
-1. **Make CI run RSpec:** replace `bin/rails test test:system` in `ci.yml` with `bundle exec rspec` and delete the leftover Minitest `test/` directory.
-2. **User management API:** own account (`PATCH /api/v1/auth/me`: name, email, password with current password) and admin endpoints (`/api/v1/users` index/show/update, deactivate). Rules in services (e.g. `Users::UpdateRole`: no self-demotion, never remove the last admin), plus a `UserSerializer`. Decide whether to add an `active` flag on users for soft delete.
-3. **Order lifecycle API:** expose `pay!`/`cancel!`/`refund!` through the API, with admin-only refunds.
-4. **Token-based API auth:** replace session cookies before a real client uses the API.
-5. **Web user pages:** own profile and admin user management, reusing the services from step 2.
-6. **Small cleanups:** remove the commented-out `require_admin!` in `Api::V1::OrdersController`; wire `cart_controller.js` into the cart view or delete it; add a text version of the confirmation email; seed an admin user and sample products in `db/seeds.rb`.
-7. **Later:** authorization policies (Pundit).
+1. **User management API:** own account (`PATCH /api/v1/auth/me`: name, email, password with current password) and admin endpoints (`/api/v1/users` index/show/update, deactivate). Rules in services (e.g. `Users::UpdateRole`: no self-demotion, never remove the last admin), plus a `UserSerializer`. Decide whether to add an `active` flag on users for soft delete.
+2. **Order lifecycle API:** expose `pay!`/`cancel!`/`refund!` through the API, with admin-only refunds.
+3. **Token-based API auth:** replace session cookies before a real client uses the API.
+4. **Web admin user management** (own profile is done; reuse `Users::UpdateProfile` for the API `PATCH /me`), reusing the services from step 2.
+5. **Small cleanups:** remove the commented-out `require_admin!` in `Api::V1::OrdersController`; wire `cart_controller.js` into the cart view or delete it; add a text version of the confirmation email; seed sample products in `db/seeds.rb` (dev users incl. an admin are already seeded).
+6. **Later:** authorization policies (Pundit).
 
 ## Architectural Notes
 
-- **Service objects:** business logic for order creation is isolated in `Orders::CreateOrder` (via a small `ApplicationService::Base`/`Result` convention), shared by both web and API controllers — the only service in the codebase so far.
+- **Service objects:** business logic for order creation is isolated in `Orders::CreateOrder` (via a small `ApplicationService::Base`/`Result` convention), shared by both web and API controllers — the first service, followed by `Users::UpdateProfile`.
 - **Web/API separation:** the app serves both a server-rendered Tailwind/Turbo frontend and a JSON API under `/api/v1`, with `Api::BaseController` (`ActionController::API`) separate from `ApplicationController` (`ActionController::Base`). Both reuse the same Devise-backed `User` model and session mechanism rather than token-based auth for the API.
 - **Pricing representation:** all money values (`price`, `unit_price`, `total_amount`) are stored as integers, avoiding floating-point currency, reinforced by DB check constraints.
 - **Order price snapshots:** `OrderItem#unit_price` is copied from `Product#price` at order-creation time, and `Order#total_amount` is computed via a `before_validation` callback — this is a deliberate financial snapshot pattern (product prices can change later without altering historical orders).
@@ -126,6 +131,5 @@ The customer flow (browse → cart → checkout → order history) and admin pro
 
 ## Discrepancies
 
-- **CI vs. test suite:** CI runs Minitest (`test/` only has a placeholder), so a green CI build says nothing about the RSpec suite.
 - **`Order#pay!`/`cancel!`/`refund!`** exist and are unit-tested at the model level, but no controller (web or API) exposes them, so they are not reachable by users.
 - **`cart_controller.js`** exists but is not attached to any view.
