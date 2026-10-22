@@ -31,6 +31,11 @@
         <dd class="font-medium text-stone-700">$<%= number_with_delimiter(@total_spent) %></dd>
       </div>
     </dl>
+
+    <div class="mt-6 flex justify-end">
+      <%= link_to "Edit profile", edit_user_registration_path,
+            class: "text-sm font-semibold px-4 py-2 rounded-lg border border-amber-700 text-amber-700 hover:bg-amber-50 transition-colors" %>
+    </div>
   </div>
 
   <div class="mb-4 flex items-center justify-between">
