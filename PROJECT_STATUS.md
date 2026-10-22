@@ -2,7 +2,7 @@
 
 ## Last Updated
 
-2026-10-16
+2026-10-20
 
 ## Repository State
 
@@ -90,21 +90,23 @@
 - [x] Product API — full CRUD, correct 401/403 handling
 - [x] Product management UI on the web (show/new/edit/destroy, admin-only)
 - [ ] Order lifecycle actions (pay/cancel/refund) exposed via any controller — model methods exist but are unreachable
-- [ ] User profile page and admin user management (web)
+- [ ] User management API (own account + admin) — API-first priority
+- [ ] User profile page and admin user management (web), after the API version
 - [ ] CI running the RSpec suite
 
 ## Current Development Focus
 
-The customer flow (browse → cart → checkout → order history) and admin product management are complete on both web and API. `to_do.txt` points next at **user-facing account pages** (own profile, admin user management) and **exposing order lifecycle transitions** (`pay!`/`cancel!`/`refund!`).
+The customer flow (browse → cart → checkout → order history) and admin product management are complete on both web and API. The project is now **API/backend-first**: user management and order lifecycle transitions (`pay!`/`cancel!`/`refund!`) get built in the API before their web counterparts, with business rules in service objects so the web pages can reuse them later.
 
 ## Recommended Next Steps
 
 1. **Make CI run RSpec:** replace `bin/rails test test:system` in `ci.yml` with `bundle exec rspec` and delete the leftover Minitest `test/` directory.
-2. **Order lifecycle:** expose `pay!`/`cancel!`/`refund!` through controller actions (API and/or web), with admin-only refunds.
-3. **User accounts:** a web page for users to view/edit their own info, and admin user management.
-4. **Small cleanups:** remove the commented-out `require_admin!` in `Api::V1::OrdersController`; wire `cart_controller.js` into the cart view or delete it; add a text version of the confirmation email.
-5. **Dev experience:** seed an admin user and sample products in `db/seeds.rb`.
-6. **Later:** authorization policies (Pundit) and token-based API auth.
+2. **User management API:** own account (`PATCH /api/v1/auth/me`: name, email, password with current password) and admin endpoints (`/api/v1/users` index/show/update, deactivate). Rules in services (e.g. `Users::UpdateRole`: no self-demotion, never remove the last admin), plus a `UserSerializer`. Decide whether to add an `active` flag on users for soft delete.
+3. **Order lifecycle API:** expose `pay!`/`cancel!`/`refund!` through the API, with admin-only refunds.
+4. **Token-based API auth:** replace session cookies before a real client uses the API.
+5. **Web user pages:** own profile and admin user management, reusing the services from step 2.
+6. **Small cleanups:** remove the commented-out `require_admin!` in `Api::V1::OrdersController`; wire `cart_controller.js` into the cart view or delete it; add a text version of the confirmation email; seed an admin user and sample products in `db/seeds.rb`.
+7. **Later:** authorization policies (Pundit).
 
 ## Architectural Notes
 
