@@ -18,3 +18,4 @@ authorization policies (Pundit) to replace ad-hoc role_admin? checks
 
 Ideas for later:
   order_historic table: record each order status change (pending/paid/cancelled/refunded) with who changed it and when
+test
