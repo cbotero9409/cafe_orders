@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "ruby_lsp",
+      "name": "Debug current spec file",
+      "request": "launch",
+      "program": "bundle exec rspec ${file}"
+    },
+    {
+      "type": "ruby_lsp",
+      "name": "Debug Rails server",
+      "request": "launch",
+      "program": "bin/rails server"
+    },
+    {
+      "type": "ruby_lsp",
+      "name": "Attach to running process",
+      "request": "attach"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 ## Last Updated
 
-2026-10-22
+2026-10-24
 
 ## Repository State
 
@@ -59,6 +59,8 @@
 
 ### Code Style / Tooling
 - RuboCop enforces style in CI (`bin/rubocop`); `Layout/IndentationConsistency` is set to `normal` in `.rubocop.yml` (commit `fdce4c8`, which also normalized code style across controllers/services and bumped `brakeman` to 8.1.0).
+
+- VS Code debugging: `.vscode/launch.json` provides launch configs for the current spec file, the Rails server, and attaching to a running process (Ruby LSP + `debug` gem).
 
 ### Web Frontend
 - Server-rendered ERB views styled with Tailwind CSS, using Turbo Frames (`products_grid`) for filtering/search without full page reloads.
