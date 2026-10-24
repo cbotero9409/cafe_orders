@@ -113,7 +113,8 @@ The customer flow (browse → cart → checkout → order history) and admin pro
 3. **Token-based API auth:** replace session cookies before a real client uses the API.
 4. **Web admin user management** (own profile is done; reuse `Users::UpdateProfile` for the API `PATCH /me`), reusing the services from step 2.
 5. **Small cleanups:** remove the commented-out `require_admin!` in `Api::V1::OrdersController`; wire `cart_controller.js` into the cart view or delete it; add a text version of the confirmation email; seed sample products in `db/seeds.rb` (dev users incl. an admin are already seeded).
-6. **Later:** authorization policies (Pundit).
+6. **Rails upgrade:** 8.0.4 reaches end of support on 2026-11-07, so Brakeman's EOLRails check currently fails the `scan_ruby` CI job. Upgrade to 8.1.x.
+7. **Later:** authorization policies (Pundit).
 
 ## Architectural Notes
 
