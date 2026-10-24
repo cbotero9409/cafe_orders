@@ -8,6 +8,7 @@ API user management:
 API orders: expose order pay!/cancel!/refund! through the API (refund admin-only)
 API orders: remove commented-out require_admin! in Api::V1::OrdersController
 token-based API auth (API currently relies on session cookies)
+upgrade Rails 8.0.4 -> 8.1.x (support ends 2026-11-07; Brakeman EOLRails fails the scan_ruby CI job; see dependabot branch rails-8.1.3)
 
 web user administration by admin (after the API version)
 

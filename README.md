@@ -113,6 +113,14 @@ Run the test suite:
 bundle exec rspec
 ```
 
+### Debugging in VS Code
+
+`.vscode/launch.json` has three configurations for the Ruby LSP extension (uses the `debug` gem):
+
+- **Debug current spec file**: runs `bundle exec rspec` on the open file. Set breakpoints in app code or inside `it` blocks.
+- **Debug Rails server**: runs `bin/rails server`; send requests from the browser or `requests.http` (REST Client extension).
+- **Attach to running process**: attaches to a process started with the debugger enabled.
+
 ## Future Improvements
 
 - Order lifecycle actions (pay, cancel, refund) exposed through controllers
