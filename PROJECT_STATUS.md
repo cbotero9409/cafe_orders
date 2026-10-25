@@ -1,15 +1,6 @@
 # Project Status
 
-## Last Updated
-
-2026-10-24
-
-## Repository State
-
-- **Current branch:** `main` (up to date with `origin/main`)
-- **Latest code commit:** `743f7fa` (merge of PR #25, 2026-10-22)
-- **Last docs refresh:** `8170cc5` (2026-10-16)
-- **Branch in progress:** `update_docs_and_ci` (CI now runs RSpec, `CLAUDE.md` added), not yet merged
+_Dates, commits and branches are not tracked here; use `git log` for that._
 
 ## Current Implementation
 
@@ -28,9 +19,9 @@
 
 ### Testing
 - RSpec is the active test framework (FactoryBot, Shoulda Matchers, Faker configured). The leftover Rails `test/` (Minitest) directory has been removed.
-- Current run: **98 examples, 0 failures** (verified by running `bundle exec rspec` on 2026-10-22).
+- Current run: **98 examples, 0 failures** (`bundle exec rspec`).
   - The pending helper/mailer stub specs were removed; the 302-vs-401 API failures were fixed by `Api::BaseController#force_json_format`.
-- **CI runs RSpec:** `.github/workflows/ci.yml` runs `bin/rails db:test:prepare && bundle exec rspec` (on branch `update_docs_and_ci`; the Chrome install and system-test screenshot upload were removed).
+- **CI runs RSpec:** `.github/workflows/ci.yml` runs `bin/rails db:test:prepare && bundle exec rspec` (the Chrome install and system-test screenshot upload were removed).
 - Coverage exists for: models (`Order`, `OrderItem`, `Product`, `User`), the `Orders::CreateOrder` and `Users::UpdateProfile` services, `Orders::SendConfirmationJob`, and API request specs for auth/products/orders.
 - Web controllers/views are intentionally not covered — test scope is limited to the critical path (models, services, API).
 
@@ -61,6 +52,7 @@
 - RuboCop enforces style in CI (`bin/rubocop`); `Layout/IndentationConsistency` is set to `normal` in `.rubocop.yml` (commit `fdce4c8`, which also normalized code style across controllers/services and bumped `brakeman` to 8.1.0).
 
 - VS Code debugging: `.vscode/launch.json` provides launch configs for the current spec file, the Rails server, and attaching to a running process (Ruby LSP + `debug` gem).
+- VS Code Testing view: the `ruby-lsp-rspec` gem (development group) lets Ruby LSP discover and run RSpec specs from the Testing sidebar, including debugging with breakpoints.
 
 ### Web Frontend
 - Server-rendered ERB views styled with Tailwind CSS, using Turbo Frames (`products_grid`) for filtering/search without full page reloads.
@@ -100,7 +92,7 @@
 - [ ] User management API (own account + admin) — API-first priority
 - [x] User profile page and self-edit (web, via `Users::UpdateProfile`)
 - [ ] Admin user management (web), after the API version
-- [x] CI running the RSpec suite (pending merge of `update_docs_and_ci`)
+- [x] CI running the RSpec suite
 
 ## Current Development Focus
 

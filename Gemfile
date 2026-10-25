@@ -54,6 +54,9 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # RSpec support for the VS Code Testing view (Ruby LSP add-on)
+  gem "ruby-lsp-rspec", require: false
 end
 
 group :test do

@@ -113,7 +113,9 @@ Run the test suite:
 bundle exec rspec
 ```
 
-### Debugging in VS Code
+### Testing and debugging in VS Code
+
+With the Ruby LSP extension, the Testing sidebar lists the RSpec specs (via the `ruby-lsp-rspec` gem). Run or debug any spec, file or folder from there. Reload the window after the first `bundle install`.
 
 `.vscode/launch.json` has three configurations for the Ruby LSP extension (uses the `debug` gem):
 
@@ -124,7 +126,7 @@ bundle exec rspec
 ## Future Improvements
 
 - Order lifecycle actions (pay, cancel, refund) exposed through controllers
-- User profile page and admin user management
+- User management API and admin user management
 - Authorization policies (e.g. Pundit) instead of ad-hoc role checks
 - Token-based API authentication
 - Seed data for development
