@@ -12,6 +12,8 @@ upgrade Rails 8.0.4 -> 8.1.x (support ends 2026-11-07; Brakeman EOLRails fails t
 
 web user administration by admin (after the API version)
 
+test rails-reviewer on a deliberately flawed change (missing includes, missing require_admin!, spec without expectation) on a throwaway branch, to check it catches them
+
 wire up cart_controller.js (quantity +/-) in the cart view, or delete it
 add text version of OrderMailer#confirmation email
 db/seeds.rb: seed sample products for development (dev users incl. admin already seeded)

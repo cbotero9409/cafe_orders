@@ -54,6 +54,8 @@ _Dates, commits and branches are not tracked here; use `git log` for that._
 - VS Code debugging: `.vscode/launch.json` provides launch configs for the current spec file, the Rails server, and attaching to a running process (Ruby LSP + `debug` gem).
 - VS Code Testing view: the `ruby-lsp-rspec` gem (development group) lets Ruby LSP discover and run RSpec specs from the Testing sidebar, including debugging with breakpoints.
 
+- Pre-commit review: the `rails-reviewer` subagent (`.claude/agents/rails-reviewer.md`, read-only) reviews uncommitted and branch changes for risks, test quality, API contract, docs sync and cleanup, runs rubocop/brakeman/rspec, and ends with a "Verified" line. A generic copy lives in `~/.claude/agents/rails-reviewer-generic.md`. Its first trial run (config-only diff) came back clean.
+
 ### Web Frontend
 - Server-rendered ERB views styled with Tailwind CSS, using Turbo Frames (`products_grid`) for filtering/search without full page reloads.
 - Stimulus controllers: `products_controller.js` (filter tabs + debounced search, submits the form via `requestSubmit`), `cart_controller.js` (client-side quantity increment/decrement, not yet wired into a view), plus the default `hello_controller.js` scaffold.
