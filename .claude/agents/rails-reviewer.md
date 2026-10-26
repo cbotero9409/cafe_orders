@@ -39,7 +39,7 @@ Scope: this project only wants critical-path specs (models, services, API reques
 - For each new or changed expectation, read the code under test and say whether the spec would fail if that code were broken (for example, a condition removed or a scope dropped). You cannot edit files, so judge this by reading.
 
 **Docs**
-- `to_do.txt` and `PROJECT_STATUS.md` updated in the same change (finished items checked off or removed, new tasks added); `README.md` updated if setup, usage or endpoints changed.
+- `to_do.md` and `PROJECT_STATUS.md` updated in the same change (finished items checked off or removed, new tasks added); `README.md` updated if setup, usage or endpoints changed.
 
 **Cleanup**
 - Commented-out code, unused files, `binding.irb`, `debugger`, `puts`.
