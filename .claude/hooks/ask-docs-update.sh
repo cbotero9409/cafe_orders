@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Before commit / PR / merge, ask the user (once per branch) whether to update the
-# project docs when code changed but to_do.md / PROJECT_STATUS.md did not.
+# Before commit / PR / merge, stop once per branch when code changed but
+# to_do.md / PROJECT_STATUS.md did not, so Claude asks the user in chat first.
 cmd=$(jq -r '.tool_input.command // ""')
 echo "$cmd" | grep -qE '\b(git commit|git merge|gh pr create|gh pr merge)\b' || exit 0
 
@@ -23,6 +23,6 @@ echo "$changed" | grep -qE '^(to_do|PROJECT_STATUS)\.md$' && exit 0
 touch "$marker"
 jq -n '{hookSpecificOutput: {
   hookEventName: "PreToolUse",
-  permissionDecision: "ask",
-  permissionDecisionReason: "Code changed but to_do.md / PROJECT_STATUS.md were not updated (README.md too, if setup, usage or endpoints changed). Approve to continue without them, or decline and ask Claude to update them. You will not be asked again on this branch."
+  permissionDecision: "deny",
+  permissionDecisionReason: "Docs check (project hook): code changed on this branch but to_do.md / PROJECT_STATUS.md were not updated. Before retrying, ask the user with AskUserQuestion whether to update to_do.md, PROJECT_STATUS.md and README.md (README only if setup, usage or endpoints changed) or continue without them. Then do what they chose and retry the command; this hook will not stop it again on this branch."
 }}'
