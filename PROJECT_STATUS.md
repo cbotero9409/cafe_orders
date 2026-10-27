@@ -55,6 +55,7 @@ _Dates, commits and branches are not tracked here; use `git log` for that._
 - VS Code Testing view: the `ruby-lsp-rspec` gem (development group) lets Ruby LSP discover and run RSpec specs from the Testing sidebar, including debugging with breakpoints.
 
 - On-demand review: the `rails-reviewer` subagent (`.claude/agents/rails-reviewer.md`, read-only) reviews uncommitted and branch changes for risks, test quality, API contract, docs sync and cleanup, runs rubocop/brakeman/rspec, and ends with a "Verified" line. A generic copy lives in `~/.claude/agents/rails-reviewer-generic.md`. Its first trial run (config-only diff) came back clean.
+- Docs-sync hook: `.claude/settings.json` registers a `PreToolUse` hook (`.claude/hooks/ask-docs-update.sh`) that, before `git commit`/`git merge`/`gh pr create`/`gh pr merge`, stops the command when code changed but neither `to_do.md` nor `PROJECT_STATUS.md` did, so Claude asks the user in chat whether to update them. If the user chooses to continue without docs, Claude retries with `DOCS_ACK=1`, which records a fingerprint of the code changes in `.git/`; later commits, PRs and merges of the same changes go through, and new code changes ask again. If the user chooses not to proceed, nothing is recorded, so the hook asks again next time.
 
 ### Web Frontend
 - Server-rendered ERB views styled with Tailwind CSS, using Turbo Frames (`products_grid`) for filtering/search without full page reloads.
