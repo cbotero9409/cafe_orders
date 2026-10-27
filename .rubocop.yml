@@ -19,4 +19,8 @@ Layout/DefEndAlignment:
   EnforcedStyleAlignWith: def
 
 Layout/IndentationConsistency:
+  Enabled: true
   EnforcedStyle: normal
+
+Lint/Debugger:
+  Enabled: true
