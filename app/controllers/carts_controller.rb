@@ -13,8 +13,8 @@ class CartsController < ApplicationController
   end
 
   def add
-    qty = [ params[:quantity].to_i, 1 ].max
-    cart_session[params[:product_id]] = (cart_session[params[:product_id]] || 0) + qty
+    qtyy = [ params[:quantity].to_i, 1 ].max
+    cart_session[params[:product_id]] = (cart_session[params[:product_id]] || 0) + qtyy
     redirect_back_or_to products_path
   end
 
