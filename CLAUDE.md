@@ -16,6 +16,10 @@ Before each commit, check every `to_do.md` item against the diff, including CI, 
 
 Run the rails-reviewer subagent only when asked, not before every commit. When asked, handle what it finds. For critical backend changes (services, models, migrations, auth, money), run it with `model: opus`.
 
+## CI results
+
+After pushing or opening a PR, wait for CI and report the result of each check. If a check fails, say whether the failure is new or already known (e.g. listed in `to_do.md`), and ask before merging on a new failure.
+
 ## Priority
 
 API/backend first, web pages after (reuse the same services).
