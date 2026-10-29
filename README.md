@@ -54,6 +54,7 @@ Product   → referenced by OrderItems
 - jsonapi-serializer (API responses)
 - Solid Queue (background jobs)
 - RSpec, FactoryBot, Shoulda Matchers, Faker
+- GitHub Actions (CI: RuboCop, Brakeman, RSpec)
 
 ## API
 
@@ -122,6 +123,10 @@ With the Ruby LSP extension, the Testing sidebar lists the RSpec specs (via the 
 - **Debug current spec file**: runs `bundle exec rspec` on the open file. Set breakpoints in app code or inside `it` blocks.
 - **Debug Rails server**: runs `bin/rails server`; send requests from the browser or `requests.http` (REST Client extension).
 - **Attach to running process**: attaches to a process started with the debugger enabled.
+
+### Code quality and review
+
+CI (GitHub Actions) runs RuboCop, Brakeman and the RSpec suite. Brakeman can also be run locally with `bin/brakeman`. A read-only `rails-reviewer` subagent for Claude Code reviews changes for risks, test quality and docs sync.
 
 ## Future Improvements
 
