@@ -51,6 +51,8 @@ _Dates, commits and branches are not tracked here; use `git log` for that._
 ### Code Style / Tooling
 - RuboCop enforces style in CI (`bin/rubocop`); `Layout/IndentationConsistency` (set to `normal`) and `Lint/Debugger` are enabled in `.rubocop.yml`, since omakase turns them off (commit `fdce4c8`, which also normalized code style across controllers/services and bumped `brakeman` to 8.1.0).
 
+- CI least privilege: `.github/workflows/ci.yml` sets a workflow-level `permissions: contents: read`, so `GITHUB_TOKEN` is read-only in every job. A job that later needs more (PR comments, SARIF upload) should get that permission on the job itself. The workflow also has a `workflow_dispatch` trigger, so it can be run by hand (`gh workflow run ci.yml --ref <branch>`) once it is on `main`.
+
 - VS Code debugging: `.vscode/launch.json` provides launch configs for the current spec file, the Rails server, and attaching to a running process (Ruby LSP + `debug` gem).
 - VS Code Testing view: the `ruby-lsp-rspec` gem (development group) lets Ruby LSP discover and run RSpec specs from the Testing sidebar, including debugging with breakpoints.
 

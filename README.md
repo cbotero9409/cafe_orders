@@ -126,7 +126,7 @@ With the Ruby LSP extension, the Testing sidebar lists the RSpec specs (via the 
 
 ### Code quality and review
 
-CI (GitHub Actions) runs RuboCop, Brakeman and the RSpec suite. Brakeman can also be run locally with `bin/brakeman`. A read-only `rails-reviewer` subagent for Claude Code reviews changes for risks, test quality and docs sync.
+CI (GitHub Actions) runs RuboCop, Brakeman and the RSpec suite, with a read-only `GITHUB_TOKEN` (`permissions: contents: read`). It can also be started manually with `gh workflow run ci.yml --ref <branch>`. Brakeman can also be run locally with `bin/brakeman`. A read-only `rails-reviewer` subagent for Claude Code reviews changes for risks, test quality and docs sync.
 
 ## Future Improvements
 
